@@ -1,0 +1,89 @@
+.question-card{
+    padding: 16px;
+    margin: 12px 0;
+    border-radius: 8px;
+    box-shadow: 10px 4px 8px rgba(0, 0, 0, 0.5); /* Adds a subtle shadow */
+    gap: 10px; /* Space between elements inside the card */
+    margin-bottom: 30px; /* Space below the card */
+    background-color: #fcfdff;
+}
+.question-card:hover {
+    box-shadow: 10px 4px 12px rgba(0, 0, 0, 0.7); /* Darker shadow on hover */
+    transform: translateY(-10px); /* Slight upward movement on hover */
+    transition: all 0.3s ease; /* Smooth transition for the hover effect */
+    border: 2px solid #48494B
+}
+.question-card h2{
+    color: black
+}
+.description{
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* Number of visible lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: black
+}
+.author-and-date{
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+.author-and-date p{
+    font-weight: bolder;
+    color: #007bff;
+}
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* space between tags */
+    margin-top: 10px;
+  }
+  
+.tag {
+    border: 2px solid #48494B;
+    padding: 4px 8px;
+    border-radius: 30px;
+    color: #f5f5f5;
+    font-size: 0.9rem;
+    background-color: #48494B;
+}
+.tag:hover{
+    background-color: #007bff;
+}
+.question-upvotes{
+    display: flex;
+    align-items: center;
+    gap: 7px
+}
+.question-upvotes p{
+    color: black;
+}
+.question-answers{
+    display: flex;
+    align-items: center;
+    gap: 7px
+}
+.question-answers p{
+    color: black;
+}
+.question-views{
+    display: flex;
+    align-items: center;
+    gap: 7px
+}
+.question-views p{
+    color: black;
+}
+.question-statistics{
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+.desc{
+    color: black;
+}
+.view-question-button{
+    background-color: #007bff;
+    border-radius: 5px;
+}

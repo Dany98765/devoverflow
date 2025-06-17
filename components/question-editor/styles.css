@@ -1,0 +1,61 @@
+.question-editor{
+    border: 2px solid #48494B;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: #fff;
+}
+.question-editor .cm-editor {
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    background-color: #fefefe;
+    border-radius: 4px;
+  }
+  .question-editor .cm-editor.cm-focused {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+/* styles.css */
+
+.mdxeditor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  background-color: var(--toolbar-bg, #f9f9f9);
+  border-bottom: 1px solid #ccc;
+  align-items: center;
+}
+
+/* Target individual toolbar buttons */
+.mdxeditor-toolbar button {
+  min-width: 40px;
+  height: 36px;
+  padding: 0 8px;
+  font-size: 14px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Optional: hover and active styles */
+.mdxeditor-toolbar button:hover {
+  background-color: #f0f0f0;
+}
+
+.mdxeditor-toolbar button:active {
+  background-color: #e0e0e0;
+}
+
+/* Align dropdowns or larger elements nicely too */
+.mdxeditor-toolbar select,
+.mdxeditor-toolbar input,
+.mdxeditor-toolbar .insert-codeblock {
+  height: 36px;
+  font-size: 14px;
+}
