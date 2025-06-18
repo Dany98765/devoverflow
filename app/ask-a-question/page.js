@@ -11,14 +11,13 @@ const QuestionEditor = dynamic(() => import("@/components/question-editor/page")
 
 export default function AskAQuestion() {
   const [questionTitle, setQuestionTitle] = useState("");
-  const [questionTitleError, setQuestionTitleError] = (true)
+  const [questionTitleError, setQuestionTitleError] = useState("")
   const editorRef = useRef();
 
   function handleTitleSubmission(e){
-    if (newValue.length <= 30) {
+    if (questionTitle.length <= 30) {
       setQuestionTitle(e.target.value)
     }else{
-      setQuestionTitle(questionTitle)
       setQuestionTitleError("Cannot Exceed 30 charcaters!")
     }
   }
@@ -40,10 +39,9 @@ export default function AskAQuestion() {
             type="text"
             className="title-field"
             placeholder="Enter your question's title"
-            onChange={questionTitle.length > 30 ? undefined : handleTitleSubmission}
-            error={questionTitleError}
-            helperText={questionTitleError}
+            onChange={questionTitle.length > 30 ? undefined : (e) => setQuestionTitle(e.target.value)}
             value={questionTitle}
+            maxLength={50}
           />
           <h5>Be specific and imagine you are asking this question to another person face-to-face.</h5>
         </div>

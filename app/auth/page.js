@@ -50,17 +50,19 @@ export default function Signin() {
             return;
         }
         else {
-            setErrorMessage("Sucess... redirecting to home page");
+            setErrorMessage("");
             console.log("Username:", username);
             console.log("Email:", email);
-            
         }
     }
 
     return (
         <div className="signin-container">
             {errorMessage && (
-               <AlertMessage status="error" message={errorMessage} />
+               <AlertMessage severity="error" message={errorMessage} />
+            )}
+            {!errorMessage && (
+                <AlertMessage severity="Success" message="Authentication has successfully been established!"/>
             )}
             <br />
             <div className="auth-choice">
