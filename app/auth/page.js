@@ -11,15 +11,19 @@ import validateEmail from "@/utils/auth-validation/email-validation";
 import validateUsername from "@/utils/auth-validation/username-validation";
 import validatePassword from "@/utils/auth-validation/password-validation";
 import "./styles.css";
+import { useRouter } from "next/navigation";
+import logger from "@/utils/logger";
 
 export default function Signin() {
     const [signup, setSignup] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const signupBgColor = signup ? "#007bff" : "white";
     const signinBgColor = signup ? "white" : "#007bff";
+    const router = useRouter()
 
     async function handleProviderSignin(provider) {
         try {
@@ -51,18 +55,21 @@ export default function Signin() {
         }
         else {
             setErrorMessage("");
+            setSuccessMessage("Authentication has successfully been established!")
+            router.push(ROUTES.HOME)
             console.log("Username:", username);
             console.log("Email:", email);
+
         }
     }
 
     return (
         <div className="signin-container">
             {errorMessage && (
-               <AlertMessage severity="error" message={errorMessage} />
+               <AlertMessage status="error" message={errorMessage} />
             )}
-            {!errorMessage && (
-                <AlertMessage severity="Success" message="Authentication has successfully been established!"/>
+            {successMessage && (
+                <AlertMessage status="success" message={successMessage}/>
             )}
             <br />
             <div className="auth-choice">

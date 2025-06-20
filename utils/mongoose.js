@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import logger from "./logger";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -15,6 +16,7 @@ if (!cached) {
 
 const dbConnect = async () => {
   if (cached.conn) {
+    logger.info("Connected successfully to mongoose!....")
     return cached.conn; // return if already connected
   }
 
@@ -24,7 +26,7 @@ const dbConnect = async () => {
         dbName: "devflow", // specify the database name
       })
       .then((result) => {
-        console.log("Connected to MongoDB");
+        logger.info("Connected successfully to mongoose!....")
         return result;
       })
       .catch((error) => {

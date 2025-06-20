@@ -4,6 +4,8 @@ import ROUTES from "@/routes";
 import FilterButtons from "@/components/filter-buttons/page";
 import "./globals.css";
 import QuestionCard from "@/components/question-card/page";
+import logger from "@/utils/logger";
+import dbConnect from "@/utils/mongoose";
 
 export default async function Home({searchParams}) {
   const questions = [
@@ -63,12 +65,22 @@ export default async function Home({searchParams}) {
       description: "Unit testing is essential for ensuring code quality and reliability in JavaScript applications. This question discusses best practices for writing effective tests, including choosing the right testing frameworks and tools. It also covers strategies for organizing test cases and improving test coverage. Developers aiming to enhance their testing skills will find this helpful.",
     },
   ];
-  const query = await searchParams.query
+  const test = async () => {
+    try {
+    await dbConnect()
+    } catch (error) {
+      return handleError(error);
+    }
+  };
+  //test()
+  const query = await searchParams?.query
   console.log(query + " from search params..............");
   
   const filtered = query
       ? questions.filter((q) => q.title.toLowerCase().includes(query.toLowerCase()))
       : questions;
+  
+  logger.info("Successfully authenticated!...........")
   return (
     <div>
       <div className="ask-question-section">
