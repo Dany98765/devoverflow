@@ -5,7 +5,6 @@ import FilterButtons from "@/components/filter-buttons/page";
 import "./globals.css";
 import QuestionCard from "@/components/question-card/page";
 import logger from "@/utils/logger";
-import dbConnect from "@/utils/mongoose";
 
 export default async function Home({searchParams}) {
   const questions = [
@@ -67,12 +66,13 @@ export default async function Home({searchParams}) {
   ];
   const test = async () => {
     try {
-    await dbConnect()
+      //return await api.users.getAll()
     } catch (error) {
-      return handleError(error);
+      return logger.error(error)
     }
   };
-  //test()
+  const allUsers = await test()
+  logger.info(allUsers)
   const query = await searchParams?.query
   console.log(query + " from search params..............");
   
