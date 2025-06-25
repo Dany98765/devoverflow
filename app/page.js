@@ -80,7 +80,6 @@ export default async function Home({searchParams}) {
       ? questions.filter((q) => q.title.toLowerCase().includes(query.toLowerCase()))
       : questions;
   
-  logger.info("Successfully authenticated!...........")
   return (
     <div>
       <div className="ask-question-section">

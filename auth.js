@@ -1,11 +1,45 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
-import { api } from "./utils/extended-fetch";
 import logger from "./utils/logger";
+import Credentials from 'next-auth/providers/credentials'
+import { api } from "./utils/extended-fetch";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [GitHub, Google],
+  providers: [GitHub, Google,
+    Credentials({
+      async authorize(credentials) {
+        const { email, password } = credentials
+        logger.info(credentials)
+        try {
+          const existingAccountResponse = await api.accounts.getByProvider(email);
+          const existingAccount = existingAccountResponse.data;
+          logger.info(existingAccount, existingAccountResponse)
+          if (!existingAccount) return null;
+    
+          const existingUserResponse = await api.users.getById(existingAccount.userId.toString());
+          const existingUser = existingUserResponse.data;
+    
+          if (!existingUser) return null;
+    
+          const isValidPassword = await bcrypt.compare(password, existingAccount.password);
+          logger.info("Password validated successfully!")
+          if (!isValidPassword) return null;
+    
+          return {
+            id: existingUser.id,
+            email: existingUser.email,
+            image: existingUser.image,
+          };
+        } catch (error) {
+          console.error("Authorize error:", error);
+          return null;
+        }
+      }
+    }),
+    
+  ],
+
   callbacks: {
     async session({ session, token }) {
       session.user.id = token.sub;
