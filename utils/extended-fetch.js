@@ -10,7 +10,7 @@ export const api = {
       provider,
       providerAccountId,
     }) =>
-      fetchHandler(`${BASE_URL}/auth/oauthSignin`, {
+      fetchHandler(`${BASE_URL}/auth/oauthSignin/route.js`, {
         method: "POST",
         body: JSON.stringify({ user, provider, providerAccountId }),
       }),

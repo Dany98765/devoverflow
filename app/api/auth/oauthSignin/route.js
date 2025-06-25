@@ -4,6 +4,7 @@ import Account from "@/database/account.model"
 import mongoose from "mongoose"
 import isEmail from "validator/lib/isEmail"
 import dbConnect from "@/utils/mongoose"
+import { NextResponse } from "next/server"
 
 export async function POST(request) {
     await dbConnect()
@@ -43,7 +44,9 @@ export async function POST(request) {
         return NextResponse.json({ success: true });
     } catch(error){
         session.abortTransaction()
+        return NextResponse.json({ success: false, message: "Invalid input" }, { status: 400 });
     } finally{
         session.endSession()
+        return NextResponse.json({ success: false, message: "Ended!" }, { status: 400 });
     }
 }

@@ -63,14 +63,17 @@ export async function fetchHandler(url, options = {}) {
 
     if (!response.ok) {
       logger.error(response.status, `HTTP error: ${response.status}`);
+      return null
     }
 
     return await response.json();
   } catch (error) {
     if (error.name === "AbortError") {
       logger.warn(`Request to ${url} timed out`);
+      return null
     } else {
       logger.error(`Error fetching ${url}: ${error.message}`);
+      return null
     }
   }
 }
