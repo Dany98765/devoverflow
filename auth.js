@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import logger from "./utils/logger";
 import Credentials from 'next-auth/providers/credentials'
 import { api } from "./utils/extended-fetch";
+import bcrypt from "bcryptjs"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [GitHub, Google,
@@ -12,20 +13,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { email, password } = credentials
         logger.info(credentials)
         try {
-          const existingAccountResponse = await api.accounts.getByProvider(email);
-          const existingAccount = existingAccountResponse.data;
-          logger.info(existingAccount, existingAccountResponse)
-          if (!existingAccount) return null;
-    
+          try {
+            const existingAccountResponse = await api.accounts.getByProvider(email);
+            const existingAccount = existingAccountResponse.data;
+            if (!existingAccount) return null;
+            logger.info(existingAccount, existingAccountResponse)
+
+            logger.info(`Successful!😏😏😏😏😏😏😏😏😏😏😏😏😏😏😏😏😏😏`, existingAccount, existingAccountResponse)
+          } catch (error) {
+            logger.error(`This: ${error} is the error!😏😏😏😏😏😏😏😏😏😏😏😏😏😏😏😏😏😏`)
+          }
+          //const existingAccountResponse = await api.accounts.getByProvider(email);
           const existingUserResponse = await api.users.getById(existingAccount.userId.toString());
           const existingUser = existingUserResponse.data;
-    
+          logger.info(existingAccount, existingAccountResponse, existingUser, existingUserResponse)
           if (!existingUser) return null;
-    
-          const isValidPassword = await bcrypt.compare(password, existingAccount.password);
+          const isValidPassword = bcrypt.compare(password, existingAccount.password);
           logger.info("Password validated successfully!")
           if (!isValidPassword) return null;
-    
           return {
             id: existingUser.id,
             email: existingUser.email,

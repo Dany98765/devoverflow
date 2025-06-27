@@ -2,7 +2,7 @@ import dbConnect from "@/utils/mongoose";
 import User from "@/database/user.model";
 import logger from "@/utils/logger";
 import { NextResponse } from "next/server";
-import validateUser from "@/utils/user-validation";
+import validateUser from "@/utils/validation/user-validation";
 
 export async function GET(){
     try{

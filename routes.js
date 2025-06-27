@@ -6,7 +6,7 @@ const ROUTES = {
   COLLECTIONS: '/collections',
   JOBS: '/jobs',
   TAGS: '/tags',
-  QUESTIONS: '/questions',
+  ASK_A_QUESTION: '/ask-a-question',
   NOT_FOUND: '*',
 }
 

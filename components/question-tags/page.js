@@ -1,12 +1,12 @@
+"use client"
+
 import { useState } from "react";
 import Chip from "@mui/material/Chip";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
-export default function QuestionTags() {
-  const [tags, setTags] = useState([]);
+export default function QuestionTags({tags, setTags, name}) {
   const [error, setError] = useState("");
-
   const handleChange = (event, value) => {
     if (value.length > 5) {
       setError("You can only add up to 5 tags.");
@@ -28,7 +28,7 @@ export default function QuestionTags() {
         id="tags-standard"
         options={[]}
         value={tags}
-        onChange={tags.length > 5 ? null :handleChange}
+        onChange={tags.length > 5 ? null : handleChange}
         renderTags={(value, getTagProps) =>
           value.map((option, index) => (
             <Chip
@@ -41,6 +41,7 @@ export default function QuestionTags() {
         }
         renderInput={(params) => (
           <TextField
+            name={name}
             {...params}
             variant="outlined"
             label="Tags"

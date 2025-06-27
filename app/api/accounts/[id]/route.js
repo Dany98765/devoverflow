@@ -2,7 +2,7 @@ import Account from "@/database/account.model";
 import logger from "@/utils/logger";
 import dbConnect from "@/utils/mongoose";
 import { NextResponse } from "next/server";
-import validateAccount from "@/utils/account-validation";
+import validateAccount from "@/utils/validation/account-validation";
 import mongoose from "mongoose";
 
 export async function GET(_, { params }) {

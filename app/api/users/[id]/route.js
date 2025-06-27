@@ -78,7 +78,7 @@ import User from "@/database/user.model";
 import logger from "@/utils/logger";
 import dbConnect from "@/utils/mongoose";
 import { NextResponse } from "next/server";
-import validateUser from "@/utils/user-validation";
+import validateUser from "@/utils/validation/user-validation";
 import mongoose from "mongoose";
 
 export async function GET(_, { params }) {

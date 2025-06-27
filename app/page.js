@@ -5,6 +5,7 @@ import FilterButtons from "@/components/filter-buttons/page";
 import "./globals.css";
 import QuestionCard from "@/components/question-card/page";
 import logger from "@/utils/logger";
+import Link from "next/link";
 
 export default async function Home({searchParams}) {
   const questions = [
@@ -83,7 +84,10 @@ export default async function Home({searchParams}) {
   return (
     <div>
       <div className="ask-question-section">
-        <button className="ask-question-button">Ask a Question</button>
+        <Link href={ROUTES.ASK_A_QUESTION} className="ask-question-button">
+          <button className="ask-question-button">Ask a Question</button>
+        </Link>
+        
       </div>
       <h2>All Questions</h2>
       <SearchBar placeholder="Search Questions..." route={ROUTES.HOME} />
