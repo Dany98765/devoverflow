@@ -23,6 +23,7 @@ export default function QuestionTags({tags, setTags, name}) {
   return (
     <div>
       <Autocomplete
+        name={name}
         multiple
         freeSolo
         id="tags-standard"

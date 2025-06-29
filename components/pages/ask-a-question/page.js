@@ -77,6 +77,7 @@ const QuestionEditor = dynamic(() => import("@/components/question-editor/page")
 export default function AskAQuestionPage() {
   const [tags, setTags] = useState([]);
   const [questionTitle, setQuestionTitle] = useState("");
+  const [questionDescription, setQuestionDescription] = useState("");
   const editorRef = useRef();
   logger.info(editorRef)
   const borderColor = questionTitle.length > 15 & questionTitle.length < 80 ? "blue" : "red"
@@ -110,7 +111,7 @@ export default function AskAQuestionPage() {
         {/* Description */}
         <div className="question-description-container">
           <h3>Question Description</h3>
-          <QuestionEditor editorRef={editorRef} initialMarkdown="" />
+          <QuestionEditor editorRef={editorRef} initialMarkdown="" setMarkdown={setQuestionDescription} />
           <input type="hidden" name="description" onChange={(e) => {
               const value = e.target.value;
               if (value.length <= 50 || value.length < questionTitle.length) {
@@ -125,7 +126,7 @@ export default function AskAQuestionPage() {
         {/* Tags */}
         <div>
           <h3>Question Tags</h3>
-          <QuestionTags tags={tags} setTags={setTags} />
+          <QuestionTags tags={tags} setTags={setTags} name="tags" />
           <input type="hidden" name="tags" value={JSON.stringify(tags)} />
           <h5>Enter tags to help people find your question by topics corresponding to it.</h5>
         </div>

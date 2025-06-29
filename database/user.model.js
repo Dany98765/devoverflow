@@ -8,7 +8,8 @@ const UserSchema = new Schema({
     img: { type: String },
     location: { type: String },
     portofolio: { type: String },
-    reputation: { type: Number, default: 0 }
+    reputation: { type: Number, default: 0 },
+    accountId: { type: String, unique: true }
 }, { timestamps: true }
 )
 
