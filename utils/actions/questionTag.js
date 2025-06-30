@@ -10,21 +10,21 @@ import QuestionTags from "@/components/question-tags/page"
 import User from "@/database/user.model"
 
 export async function QuestionTag(formData) {
+    await dbConnect()
     const userSession = await auth()
     const userAccountId = userSession?.user?.id; // UUID
     const user = await User.findOne({ accountId: userAccountId }); // or email, etc.
-    logger.info(`This is the user session: ${JSON.stringify(userSession)}, this is the user account ID: ${userAccountId} and this is the user session: ${JSON.stringify(userSession.user)}`)
+
     if (!user) {
       logger.error("User not found.");
       return;
     }
+
     const userId = user._id; // ✅ Mongoose ObjectId
-    const title = formData?.get("title")
+    const title = formData.get("title")
     const description = formData.get("description")
-    const tags = formData.get("tags") || "[]"
-    logger.info(title, description, tags + "??????????????????>>>>>>>>>>>>)))))))))")
-    logger.info(tags)
-    logger.error("Cannot retrieve Title formData!") 
+    const tags = formData.get("tags")
+    logger.info(title,description,tags, formData + "??????????????????>>>>>>>>>>>>)))))))))")
     await dbConnect()
     const session = await mongoose.startSession()
     session.startTransaction()
