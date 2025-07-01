@@ -9,7 +9,7 @@ const QuestionSchema = new Schema(
     upvotes: { type: Number, default: 0 },
     downvotes: { type: Number, default: 0 },
     answers: { type: Number, default: 0 },
-    tags: [{ type: Schema.Types.ObjectId, ref: "Tags" }]
+    tags: [{ type: Schema.Types.ObjectId, ref: "Tag" }]
   },
   { timestamps: true }
 );

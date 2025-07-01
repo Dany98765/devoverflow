@@ -5,11 +5,11 @@ import AlertMessage from "@/components/alert-message/page";
 export default function ValidateUsername({username}) {
     const [usernameError, setUsernameError] = useState({ message: "", status: "error" })
     useEffect(() => {
-        if (username.length < 6){ 
+        if (username.length > 0 && username.length < 6){ 
             setUsernameError({ message: "Username must contain at least 6 characters!", status: "error"})
-        } else if (username.length > 20) {
+        } else if (username.length > 0 && username.length > 20) {
             setUsernameError({ message: "Username must not exceed 20 characters!", status: "error"})
-        } else if ( !/\d/.test(username)) { // contains at least one digit
+        } else if (username.length > 0 && !/\d/.test(username)) { // contains at least one digit
             setUsernameError({ message: "Username must contain at least 1 digit!", status: "error"})
         }
         else {
@@ -22,5 +22,6 @@ export default function ValidateUsername({username}) {
         </div>
     )
 }
+
 
 

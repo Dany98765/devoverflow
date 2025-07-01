@@ -6,7 +6,7 @@ import isEmail from "validator/lib/isEmail";
 export default function ValidateEmail({email}) {
     const [emailError, setEmailError] = useState({ message: "", status: "error" })
     useEffect(() => {
-        if (!isEmail(email)){ 
+        if (email.length > 0 && !isEmail(email)){ 
             setEmailError({ message: "Invalid email address!", status: "error"})
         } else {
             setEmailError({ message: "", status: "success"})

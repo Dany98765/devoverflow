@@ -1,3 +1,26 @@
 .question-title-container{
     gap: 30px;
 }
+.post-question-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    background-color: #007bff; /* Bootstrap primary color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.post-question-button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    transform: translateY(-3px); /* Slight upward movement */
+    transition: all 0.3s ease; /* Smooth transition */
+}
+.post-question-button:disabled {
+    background-color: #6c757d; /* Bootstrap secondary color */
+    cursor: not-allowed;
+}
