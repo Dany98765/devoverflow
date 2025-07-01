@@ -21,7 +21,7 @@ export default async function AskAQuestion({ params }) {
 
   return (
     <div>
-      <AskAQuestionPage isEdit question={question} />
+      <AskAQuestionPage isEdit={true} question={question} />
     </div>
   );
 }

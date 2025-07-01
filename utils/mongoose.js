@@ -16,7 +16,6 @@ if (!cached) {
 
 const dbConnect = async () => {
   if (cached.conn) {
-    logger.info("Connected successfully to mongoose!....")
     return cached.conn; // return if already connected
   }
 
@@ -26,7 +25,6 @@ const dbConnect = async () => {
         dbName: "devflow", // specify the database name
       })
       .then((result) => {
-        logger.info("Connected successfully to mongoose!....")
         return result;
       })
       .catch((error) => {

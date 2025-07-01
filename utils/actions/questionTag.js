@@ -39,7 +39,7 @@ export async function createQuestion(formData) {
     if (title.length < 15 ||
         title.length > 80 ||
         description.length < 50 ||
-        description.length > 300 ||
+        description.length > 1000 ||
         rawTags.length < 2)
         {
           throw new Error("Invalid question input!")
@@ -100,6 +100,8 @@ export async function createQuestion(formData) {
 }
 export async function editQuestion(formData) {
   await dbConnect();
+  const userSession = await auth();
+  const email = userSession.user.email
   const title = formData.get("title");
   const description = formData.get("description");
   const rawTags = formData.get("tags"); 
@@ -111,8 +113,17 @@ export async function editQuestion(formData) {
   const session = await mongoose.startSession();
   session.startTransaction();
   try{
+    if (title.length < 15 ||
+      title.length > 80 ||
+      description.length < 50 ||
+      description.length > 1000 ||
+      rawTags.length < 2)
+      {
+        throw new Error("Invalid question input!")
+      }
+    logger.info(questionId)
     const question = await Question.findById(questionId).populate("tags");
-
+    logger.info(question)
     if (!question) {
       throw new Error("Question not found");
     }
@@ -121,10 +132,13 @@ export async function editQuestion(formData) {
       throw new Error("Unauthorized");
     }
 
-    if (question.title !== title || question.content !== content) {
+    if (question.title !== title || question.description !== description) {
       question.title = title;
-      question.content = content;
+      question.content = description;
       await question.save({ session });
+      logger.info("Edited!!")
+    } else{
+      logger.error("No fields were updated!")
     }
 
     const tagsToAdd = tags.filter(
@@ -133,7 +147,7 @@ export async function editQuestion(formData) {
     const tagsToRemove = question.tags.filter(
       (tag) => !tags.includes(tag.name.toLowerCase())
     );
-
+    logger.info("Tags filtered!")
     const newTagDocuments = [];
 
     if (tagsToAdd.length > 0) {
@@ -151,6 +165,7 @@ export async function editQuestion(formData) {
           });
 
           question.tags.push(existingTag._id);
+          logger.info("Tags pushed!")
         }
       }
     }
@@ -162,12 +177,12 @@ export async function editQuestion(formData) {
         { $inc: { questions: -1 } },
         { session }
       );
-
+      logger.info("UpdateMany!")
       await QuestionTag.deleteMany(
         { tag: { $in: tagIdsToRemove }, question: questionId },
         { session }
       );
-
+      logger.info("DeleteMany!")
       question.tags = question.tags.filter(
         (tagId) => !tagsToRemove.includes(tagId)
       );
@@ -180,7 +195,10 @@ export async function editQuestion(formData) {
     await question.save({ session });
     await session.commitTransaction();
 
-    return { success: true, data: JSON.parse(JSON.stringify(question)) };
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(question)),
+    };
   } catch (error) {
     await session.abortTransaction();
     return { success: false, message: "Question creation failed." };

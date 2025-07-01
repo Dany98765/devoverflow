@@ -4,10 +4,12 @@ import "./styles.css";
 import { useState, useTransition, useEffect } from "react";
 import dynamic from "next/dynamic";
 import QuestionTags from "@/components/question-tags/page";
-import { createQuestion } from "@/utils/actions/questionTag";
+import { createQuestion, editQuestion } from "@/utils/actions/questionTag";
 import AlertMessage from "@/components/alert-message/page";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/routes";
+import { title } from "process";
+import logger from "@/utils/logger";
 
 const QuestionEditor = dynamic(() => import("@/components/question-editor/page"), {
   ssr: false,
@@ -55,15 +57,32 @@ export default function AskAQuestionPage({ question, isEdit }) {
       setTags(question.tags)
     }
   }, [question?.title, question?.description, question?.tags])
-
+  if (question?.title === title && question?.description === markdown && question?.tags === tags){
+    logger.info("EXACTLY THE SAME!")
+  } else{
+    logger.info("")
+  }
   return (
     <div>
+      {question?.title === title && question?.description === markdown && question?.tags === tags ? 
+      <AlertMessage 
+      status="success"
+      message="No fields were updated"/> 
+      : null}
       <h1>Ask a question</h1>
       <form className="question-form" action={async (formData) => {
         startTransition(async () => {
-          const result = await createQuestion(formData);
-          if (result.data){
-            router.push(ROUTES.QUESTION_DETAILS(result.data._id))
+          if (isEdit){
+            const result = await editQuestion(formData)
+            if (result.data){
+              logger.info(result.data + ">>>>>>>>>>>>>>>>>?????????????????!!!!!!!!!!!!!!!!")
+              router.push(ROUTES.QUESTION_DETAILS(result.data._id))
+            }
+          } else {
+            const result = await createQuestion(formData);
+            if (result.data){
+              router.push(ROUTES.QUESTION_DETAILS(result.data._id))
+            }
           }
         })
       }
@@ -94,8 +113,8 @@ export default function AskAQuestionPage({ question, isEdit }) {
           <QuestionEditor fieldName="description" markdownProp={markdown} handleChangeProp={handleChange} />
           <input name="description" type="hidden" value={markdown} onChange={handleChange} />
           <h5>Explain your problem clearly and thoroughly.</h5>
-          {(markdown.length < 50 || markdown.length > 300) ? 
-          <AlertMessage status="error" message="Description must be between 50-300 chracters long!" /> : null}
+          {(markdown.length < 50 || markdown.length > 1000) ? 
+          <AlertMessage status="error" message="Description must be between 50-1000 chracters long!" /> : null}
         </div>
         <br />
         <div>
@@ -105,6 +124,7 @@ export default function AskAQuestionPage({ question, isEdit }) {
           <h5>Enter tags to help categorize your question.</h5>
         </div>
         <br />
+        <input type="hidden" name="questionId" value={question._id} />
         <button type="submit" disabled={isPending ? true : false} className="post-question-button" style={{backgroundColor: isPendingBGColor}}>{submitLabel}</button>
       </form>
     </div>

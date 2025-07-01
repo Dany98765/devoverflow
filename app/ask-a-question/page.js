@@ -8,7 +8,7 @@ export default async function AskAQuestion(){
     if(!session) redirect(ROUTES.AUTH)
     return(
         <div>
-            <AskAQuestionPage />
+            <AskAQuestionPage isEdit={false}/>
         </div>
     )
 }
