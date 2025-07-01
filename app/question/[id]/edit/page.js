@@ -15,9 +15,9 @@ export default async function AskAQuestion({ params }) {
   if (!session) redirect(ROUTES.AUTH);
 
   const userId = session?.user?.id;
-  if (question.author.toString() !== userId) {
-    redirect(ROUTES.QUESTION_DETAILS(id));
-  }
+  // if (question.author.toString() !== userId.toString()) {
+  //   redirect(ROUTES.QUESTION_DETAILS(id));
+  // }
 
   return (
     <div>

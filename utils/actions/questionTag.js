@@ -29,7 +29,6 @@ export async function createQuestion(formData) {
   logger.info("User found successfully!")
   const session = await mongoose.startSession();
   session.startTransaction();
-
   try {
     const userId = user._id;
     const title = formData.get("title");
@@ -59,6 +58,7 @@ export async function createQuestion(formData) {
 
     const tagIds = [];
     const tagQuestionDocuments = [];
+    logger.info(`This is the author: ${JSON.stringify(question.author.toString())} and this is userID: ${JSON.stringify(userId)}`)
 
     for (const tag of tags) {
       const safeTag = escapeRegex(tag);

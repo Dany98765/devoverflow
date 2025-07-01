@@ -1,14 +1,13 @@
 "use client";
 
 import "./styles.css";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import dynamic from "next/dynamic";
 import QuestionTags from "@/components/question-tags/page";
 import { createQuestion } from "@/utils/actions/questionTag";
 import AlertMessage from "@/components/alert-message/page";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/routes";
-import logger from "@/utils/logger";
 
 const QuestionEditor = dynamic(() => import("@/components/question-editor/page"), {
   ssr: false,
@@ -16,7 +15,7 @@ const QuestionEditor = dynamic(() => import("@/components/question-editor/page")
   forwardRef: true,
 });
 
-export default function AskAQuestionPage({ isEdit, question }) {
+export default function AskAQuestionPage({ question, isEdit }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [tags, setTags] = useState([]);
@@ -28,18 +27,9 @@ export default function AskAQuestionPage({ isEdit, question }) {
     setMarkdown(value);
   };
   const isPendingBGColor = isPending ? "#6c757d" : "#007bff"
-  
-  if (question?.title){
-    setQuestionTitle(question.title)
-  }
-  if (question?.description){
-    setMarkdown(question.description)
-  }
-  if (question?.tags){
-    setTags(question.tags)
-  }
-  
-  let submitLabel
+
+  let submitLabel;
+
   if (isEdit){
     if (isPending){
       submitLabel = "Updating Question..."
@@ -53,6 +43,18 @@ export default function AskAQuestionPage({ isEdit, question }) {
       submitLabel = "Create Question"
     }
   }
+
+  useEffect(() => {
+    if (question?.title){
+      setQuestionTitle(question.title)
+    }
+    if (question?.description){
+      setMarkdown(question.description)
+    }
+    if (question?.tags){
+      setTags(question.tags)
+    }
+  }, [question?.title, question?.description, question?.tags])
 
   return (
     <div>
