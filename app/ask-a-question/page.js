@@ -5,9 +5,7 @@ import { redirect } from "next/navigation";
 
 export default async function AskAQuestion(){
     const session = await auth()
-    if(!session){
-        redirect(ROUTES.AUTH)
-    }
+    if(!session) redirect(ROUTES.AUTH)
     return(
         <div>
             <AskAQuestionPage />

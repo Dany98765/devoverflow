@@ -1,8 +1,8 @@
-export default function QuestionDetails({params}){
-    const {id} = params
+export default async function QuestionDetails({params}){
+    const {id} = await params
     return(
         <div>
-            Question: {params.id}
+            Question: {id}
         </div>
     )
 }

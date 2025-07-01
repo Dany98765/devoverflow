@@ -26,7 +26,7 @@ export async function createQuestion(formData) {
     logger.error("User not found.");
     return { success: false, message: "User not found." };
   }
-
+  logger.info("User found successfully!")
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -45,7 +45,7 @@ export async function createQuestion(formData) {
         {
           throw new Error("Invalid question input!")
         }
-
+    logger.info("Question fields were validated successfully!")
     const [question] = await Question.create(
       [
         {
@@ -74,17 +74,16 @@ export async function createQuestion(formData) {
         question: question._id,
       });
     }
-    
+    logger.info("Tags pushed successfully!")
     // Associate tags with question in intermediate model
     await QuestionTag.insertMany(tagQuestionDocuments, { session });
-
+    logger.info("Insermany works")
     // Update question with list of tags
     await Question.findByIdAndUpdate(
       question._id,
       { $push: { tags: { $each: tagIds } } },
       { session }
     );
-
     await session.commitTransaction();
 
     return {
@@ -105,16 +104,104 @@ export async function editQuestion(formData) {
   const description = formData.get("description");
   const rawTags = formData.get("tags"); 
   const tags = JSON.parse(rawTags);   
+  const questionId = formData.get("questionId")
+  const userAccountId = userSession?.user?.id;
+  const user = await User.findOne({ email });
+  const userId = user._id;
   const session = await mongoose.startSession();
   session.startTransaction();
+  try{
+    const question = await Question.findById(questionId).populate("tags");
 
-  try {
-    
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    if (question.author.toString() !== userId) {
+      throw new Error("Unauthorized");
+    }
+
+    if (question.title !== title || question.content !== content) {
+      question.title = title;
+      question.content = content;
+      await question.save({ session });
+    }
+
+    const tagsToAdd = tags.filter(
+      (tag) => !question.tags.includes(tag.toLowerCase())
+    );
+    const tagsToRemove = question.tags.filter(
+      (tag) => !tags.includes(tag.name.toLowerCase())
+    );
+
+    const newTagDocuments = [];
+
+    if (tagsToAdd.length > 0) {
+      for (const tag of tagsToAdd) {
+        const existingTag = await Tag.findOneAndUpdate(
+          { name: { $regex: new RegExp(`^${tag}$`, "i") } },
+          { $setOnInsert: { name: tag }, $inc: { questions: 1 } },
+          { upsert: true, new: true, session }
+        );
+
+        if (existingTag) {
+          newTagDocuments.push({
+            tag: existingTag._id,
+            question: questionId,
+          });
+
+          question.tags.push(existingTag._id);
+        }
+      }
+    }
+    if (tagsToRemove.length > 0) {
+      const tagIdsToRemove = tagsToRemove.map((tag) => tag._id);
+
+      await Tag.updateMany(
+        { _id: { $in: tagIdsToRemove } },
+        { $inc: { questions: -1 } },
+        { session }
+      );
+
+      await QuestionTag.deleteMany(
+        { tag: { $in: tagIdsToRemove }, question: questionId },
+        { session }
+      );
+
+      question.tags = question.tags.filter(
+        (tagId) => !tagsToRemove.includes(tagId)
+      );
+    }
+
+    if (newTagDocuments.length > 0) {
+      await QuestionTag.insertMany(newTagDocuments, { session });
+    }
+
+    await question.save({ session });
+    await session.commitTransaction();
+
+    return { success: true, data: JSON.parse(JSON.stringify(question)) };
   } catch (error) {
-    
     await session.abortTransaction();
     return { success: false, message: "Question creation failed." };
   } finally {
     session.endSession();
+  }
+}
+export async function getQuestion({ questionId }) {
+  try {
+    await dbConnect();
+    const question = await Question.findById(questionId);
+
+    if (!question) {
+      return { success: false, message: "Question not found" };
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(question)), // to make it serializable
+    };
+  } catch (error) {
+    return { success: false, message: "Error fetching question" };
   }
 }

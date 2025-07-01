@@ -8,6 +8,7 @@ import { createQuestion } from "@/utils/actions/questionTag";
 import AlertMessage from "@/components/alert-message/page";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/routes";
+import logger from "@/utils/logger";
 
 const QuestionEditor = dynamic(() => import("@/components/question-editor/page"), {
   ssr: false,
@@ -15,7 +16,7 @@ const QuestionEditor = dynamic(() => import("@/components/question-editor/page")
   forwardRef: true,
 });
 
-export default function AskAQuestionPage() {
+export default function AskAQuestionPage({ isEdit, question }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [tags, setTags] = useState([]);
@@ -27,13 +28,37 @@ export default function AskAQuestionPage() {
     setMarkdown(value);
   };
   const isPendingBGColor = isPending ? "#6c757d" : "#007bff"
+  
+  if (question?.title){
+    setQuestionTitle(question.title)
+  }
+  if (question?.description){
+    setMarkdown(question.description)
+  }
+  if (question?.tags){
+    setTags(question.tags)
+  }
+  
+  let submitLabel
+  if (isEdit){
+    if (isPending){
+      submitLabel = "Updating Question..."
+    } else {
+      submitLabel = "Update Question"
+    }
+  } else{
+    if (isPending){
+      submitLabel = "Creating Question..."
+    } else {
+      submitLabel = "Create Question"
+    }
+  }
+
   return (
     <div>
       <h1>Ask a question</h1>
-      <form className="question-form" onSubmit={(e) => {
-        e.preventDefault()
+      <form className="question-form" action={async (formData) => {
         startTransition(async () => {
-          const formData = new FormData(e.target);
           const result = await createQuestion(formData);
           if (result.data){
             router.push(ROUTES.QUESTION_DETAILS(result.data._id))
@@ -78,7 +103,7 @@ export default function AskAQuestionPage() {
           <h5>Enter tags to help categorize your question.</h5>
         </div>
         <br />
-        <button type="submit" disabled={isPending ? true : false} className="post-question-button" style={{backgroundColor: isPendingBGColor}}>{isPending ? "Creating Question..." : "Post Question"}</button>
+        <button type="submit" disabled={isPending ? true : false} className="post-question-button" style={{backgroundColor: isPendingBGColor}}>{submitLabel}</button>
       </form>
     </div>
   );
