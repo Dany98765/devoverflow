@@ -3,11 +3,12 @@
 import mongoose from "mongoose";
 import dbConnect from "../mongoose";
 import logger from "../logger";
-import Question from "@/database/question.model";
 import Tag from "@/database/tags.model";
 import User from "@/database/user.model";
-import QuestionTag from "@/database/tag-question.model"; 
+import QuestionTag from "@/database/tag-question.model";
 import { auth } from "@/auth";
+import Question from "@/database/question.model";
+import { error } from "console";
 
 // Escape regex metacharacters
 function escapeRegex(string) {
@@ -33,17 +34,16 @@ export async function createQuestion(formData) {
     const userId = user._id;
     const title = formData.get("title");
     const description = formData.get("description");
-    const rawTags = formData.get("tags"); 
-    const tags = JSON.parse(rawTags);   
+    const rawTags = formData.get("tags");
+    const tags = JSON.parse(rawTags);
 
-    if (title.length < 15 ||
-        title.length > 80 ||
-        description.length < 50 ||
-        description.length > 1000 ||
-        rawTags.length < 2)
-        {
-          throw new Error("Invalid question input!")
-        }
+    if (title.length < 25 ||
+      title.length > 100 ||
+      description.length < 50 ||
+      description.length > 1000 ||
+      rawTags.length < 2) {
+      throw new Error("Invalid question input!")
+    }
     logger.info("Question fields were validated successfully!")
     const [question] = await Question.create(
       [
@@ -64,7 +64,7 @@ export async function createQuestion(formData) {
       const safeTag = escapeRegex(tag);
       const existingTag = await Tag.findOneAndUpdate(
         { name: { $regex: new RegExp(`^${safeTag}$`, "i") } },
-        { $setOnInsert: { name: tag }, $inc: { questions: 1 } },
+        { $setOnInsert: { name: tag }, $inc: { questionCount: 1 } },
         { upsert: true, new: true, session }
       );
 
@@ -98,32 +98,40 @@ export async function createQuestion(formData) {
     session.endSession();
   }
 }
+
 export async function editQuestion(formData) {
   await dbConnect();
   const userSession = await auth();
   const email = userSession.user.email
   const title = formData.get("title");
   const description = formData.get("description");
-  const rawTags = formData.get("tags"); 
-  const tags = JSON.parse(rawTags);   
+  const rawTags = formData.get("tags");
+  const tags = JSON.parse(rawTags);
   const questionId = formData.get("questionId")
+  logger.info(questionId)
   const userAccountId = userSession?.user?.id;
   const user = await User.findOne({ email });
   const userId = user._id;
   const session = await mongoose.startSession();
   session.startTransaction();
-  try{
+  try {
     if (title.length < 15 ||
       title.length > 80 ||
       description.length < 50 ||
       description.length > 1000 ||
-      rawTags.length < 2)
-      {
-        throw new Error("Invalid question input!")
-      }
-    logger.info(questionId)
-    const question = await Question.findById(questionId).populate("tags");
-    logger.info(question)
+      rawTags.length < 2) {
+      throw new Error("Invalid question input!")
+    } else {
+      logger.info("BYPASSED CHECK!!!")
+    }
+    if (!mongoose.Types.ObjectId.isValid(questionId)) {
+      logger.error("Invaklid>>>>>>>>>>>>")
+      throw new Error("Invalid question ID format");
+    }
+
+    const question = await Question.findById(questionId).populate("tags")
+    logger.info("Fetched question? ", question);
+
     if (!question) {
       throw new Error("Question not found");
     }
@@ -131,21 +139,27 @@ export async function editQuestion(formData) {
     if (question.author.toString() !== userId) {
       throw new Error("Unauthorized");
     }
-
+    logger.info(title, question.title)
     if (question.title !== title || question.description !== description) {
       question.title = title;
-      question.content = description;
+      logger.info(question.title, title + "Updated title!!!!!!!")
+      question.description = description;
+      logger.info("Type check", typeof question.description, typeof description);
       await question.save({ session });
+
       logger.info("Edited!!")
-    } else{
+    } else {
       logger.error("No fields were updated!")
     }
 
+    const currentTagNames = question.tags.map(tag => tag.name.toLowerCase());
+
     const tagsToAdd = tags.filter(
-      (tag) => !question.tags.includes(tag.toLowerCase())
+      (tag) => !currentTagNames.includes(tag.toLowerCase())
     );
+
     const tagsToRemove = question.tags.filter(
-      (tag) => !tags.includes(tag.name.toLowerCase())
+      (tag) => !tags.map(t => t.toLowerCase()).includes(tag.name.toLowerCase())
     );
     logger.info("Tags filtered!")
     const newTagDocuments = [];
@@ -200,16 +214,24 @@ export async function editQuestion(formData) {
       data: JSON.parse(JSON.stringify(question)),
     };
   } catch (error) {
+    logger.error("editQuestion failed:", {
+      message: error?.message,
+      stack: error?.stack,
+      full: error,
+    });
     await session.abortTransaction();
     return { success: false, message: "Question creation failed." };
   } finally {
     session.endSession();
   }
 }
+
 export async function getQuestion({ questionId }) {
   try {
     await dbConnect();
-    const question = await Question.findById(questionId);
+    const question = await Question.findById(questionId)
+      .populate("tags")
+      .populate("author", "name image")
 
     if (!question) {
       return { success: false, message: "Question not found" };
@@ -221,5 +243,101 @@ export async function getQuestion({ questionId }) {
     };
   } catch (error) {
     return { success: false, message: "Error fetching question" };
+  }
+}
+
+export async function getQuestions(params) {
+  await dbConnect()
+  const { page = 1, pageSize = 10, query, filter } = params;
+  const skip = (Number(page) - 1) * pageSize;
+  const limit = Number(pageSize);
+
+  const filterQuerySearch = {};
+
+  if (filter === "recommended") {
+    return { success: true, data: { questions: [], isNext: false } };
+  }
+
+  if (query) {
+    filterQuerySearch.$or = [
+      { title: { $regex: new RegExp(query, "i") } },
+      { content: { $regex: new RegExp(query, "i") } },
+    ];
+  }
+
+  let sortCriteria = {};
+
+  switch (filter) {
+    case "frequent":
+      sortCriteria = { createdAt: -1 };
+      break;
+    case "newest":
+      sortCriteria = { createdAt: -1 };
+      break;
+    case "unanswered":
+      filterQuerySearch.answers = 0;
+      sortCriteria = { createdAt: -1 };
+      break;
+    case "popular":
+      sortCriteria = { upvotes: -1 };
+      break;
+    default:
+      sortCriteria = { createdAt: -1 };
+      break;
+  }
+
+  try {
+    const totalQuestions = await Question.countDocuments(filterQuerySearch);
+
+    const questions = await Question.find(filterQuerySearch)
+      .populate("tags", "name")
+      .populate("author", "name image")
+      .lean()
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit);
+
+    const isNext = totalQuestions > skip + questions.length;
+
+    return {
+      success: true,
+      data: { questions: JSON.parse(JSON.stringify(questions)), isNext },
+    };
+
+  } catch (error) {
+    logger.error(error)
+    return {
+      success: false,
+      //data: { questions: JSON.parse(JSON.stringify(questions)), isNext },
+    };
+  }
+}
+
+export async function incrementViews({ questionId }) {
+
+  try {
+    const question = await Question.findById(questionId);
+
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    question.views += 1;
+
+    await question.save();
+
+    revalidatePath(ROUTES.QUESTION(questionId));
+
+    return {
+      success: true,
+      error: false,
+      data: { views: question.views },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: true,
+      message: error.message
+    };
   }
 }

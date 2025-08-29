@@ -1,0 +1,7 @@
+.tag-cards{
+    display: flex;
+    flex-wrap: wrap; /* Optional: wrap to next line if too many */
+    gap: 20px;        /* Optional: spacing between cards */
+    justify-content: space-around; /* Optional: left-align */
+    align-items: stretch; /* Optional: align heights */
+}

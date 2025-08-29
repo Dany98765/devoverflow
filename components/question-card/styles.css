@@ -2,7 +2,7 @@
     padding: 16px;
     margin: 12px 0;
     border-radius: 8px;
-    box-shadow: 10px 4px 8px rgba(0, 0, 0, 0.5); /* Adds a subtle shadow */
+    box-shadow: 5px 10px #888888;
     gap: 10px; /* Space between elements inside the card */
     margin-bottom: 30px; /* Space below the card */
     background-color: #fcfdff;
@@ -32,6 +32,9 @@
 .author-and-date p{
     font-weight: bolder;
     color: #007bff;
+}
+.profile-img{
+    border-radius: 30px;
 }
 .tags {
     display: flex;
@@ -86,4 +89,12 @@
 .view-question-button{
     background-color: #007bff;
     border-radius: 5px;
+    border: 1px solid white;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-right: 18px;
+    padding-left: 18px;
+}
+.star{
+    margin-left: 35px;
 }

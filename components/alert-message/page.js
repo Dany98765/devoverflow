@@ -2,7 +2,6 @@ import { useState } from "react";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 import { Alert } from "@mui/material";
 
 export default function AlertMessage({ status, message }) {
@@ -22,7 +21,6 @@ export default function AlertMessage({ status, message }) {
                                     setOpen(false);
                                 }}
                             >
-                                <CloseIcon fontSize="inherit" />
                             </IconButton>
                         }
                         sx={{ mb: 2 }}

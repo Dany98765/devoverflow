@@ -5,6 +5,7 @@ import logger from "./utils/logger";
 import Credentials from 'next-auth/providers/credentials'
 import { api } from "./utils/extended-fetch";
 import bcrypt from "bcryptjs"
+import User from "./database/user.model";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [GitHub, Google,
@@ -12,8 +13,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         const { email, password } = credentials
         logger.info(credentials)
+        logger.info(`Successful!ksjijfifhu😏😏😏`)
+        console.log("Inside authorize function");
         try {
-          try {
             const existingAccountResponse = await api.accounts.getByProvider(email);
             const existingAccount = existingAccountResponse.data;
             if (!existingAccount) return null;
@@ -26,48 +28,63 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           //const existingAccountResponse = await api.accounts.getByProvider(email);
           const existingUserResponse = await api.users.getById(existingAccount.userId.toString());
           const existingUser = existingUserResponse.data;
-          logger.info(existingAccount, existingAccountResponse, existingUser, existingUserResponse)
+          logger.info(existingAccount, existingUser, existingUserResponse)
           if (!existingUser) return null;
-          const isValidPassword = bcrypt.compare(password, existingAccount.password);
+          const isValidPassword = await bcrypt.compare(password, existingAccount.password);
           logger.info("Password validated successfully!")
           if (!isValidPassword) return null;
+          // return {
+          //   id: existingUser.id,
+          //   email: existingUser.email,
+          //   image: existingUser.image,
+          // };
           return {
-            id: existingUser.id,
+            id: existingUser._id.toString(),
             email: existingUser.email,
-            image: existingUser.image,
+            name: existingUser.name,
+            image: existingUser.image || null,
           };
-        } catch (error) {
-          console.error("Authorize error:", error);
-          return null;
-        }
       }
     }),
-    
   ],
-
   callbacks: {
     async session({ session, token }) {
       session.user.id = token.sub;
       return session;
     },
+    // async jwt({ token, account }) {
+    //   if (account) {
+    //     const { data: existingAccount, success } =
+    //       (await api.accounts.getByProvider(
+    //         account.type === "credentials"
+    //           ? token.email
+    //           : account.providerAccountId
+    //       ));
+
+    //     if (!success || !existingAccount) return token;
+
+    //     const userId = existingAccount.userId;
+
+    //     if (userId) token.sub = userId.toString();
+    //   }
+
+    //   return token;
+    // },
     async jwt({ token, account }) {
       if (account) {
-        const { data: existingAccount, success } =
-          (await api.accounts.getByProvider(
-            account.type === "credentials"
-              ? token.email
-              : account.providerAccountId
-          ));
-
-        if (!success || !existingAccount) return token;
-
-        const userId = existingAccount.userId;
-
-        if (userId) token.sub = userId.toString();
+        const { data: existingAccount, success } = await api.accounts.getByProvider({
+          provider: account.provider,
+          providerAccountId: account.provider === "credentials"
+            ? token.email
+            : account.providerAccountId,
+        });
+    
+        if (success && existingAccount?.userId) {
+          token.sub = existingAccount.userId.toString();
+        }
       }
-
       return token;
-    },
+    },    
     async signIn({ user, profile, account }) {
       if (account?.type === "credentials") return true;
       if (!account || !user) return false;

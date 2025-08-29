@@ -36,7 +36,7 @@ export default function SearchBar({ placeholder, route }) {
           router.push(newUrl, { scroll: false });
         }
       }
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery, router, route, searchParams, pathname]);

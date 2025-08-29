@@ -67,7 +67,7 @@ export async function signUpWithCredentials(formData) {
          
           await session.commitTransaction();
           committed = true
-          await signIn("credentials", { username: username, name: name, email: email, password: password, redirect: false });
+          await signIn("credentials", { email: email, password: password, redirect: false });
     } catch (error) {
         if(!committed){
             await session.abortTransaction()

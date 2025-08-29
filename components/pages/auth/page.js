@@ -31,7 +31,7 @@ export default function AuthenticationPage() {
             await signIn(provider,
                 {
                     callbackUrl: ROUTES.HOME,
-                    prompt: "login"
+                    redirect: true,     
                 }
             );
         }

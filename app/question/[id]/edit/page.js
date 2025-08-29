@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import AskAQuestionPage from "@/components/pages/ask-a-question/page";
-import { getQuestion } from "@/utils/actions/questionTag";
+import { getQuestion } from "@/utils/actions/question.action";
 import ROUTES from "@/routes";
 import { notFound, redirect } from "next/navigation";
 

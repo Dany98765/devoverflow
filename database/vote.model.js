@@ -5,7 +5,7 @@ const VoteSchema = new Schema(
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
     id: { type: Schema.Types.ObjectId, required: true },
     type: { type: String, enum: ["Question", "Answer"], required: true },
-    voteType: { type: String, enum: ["upvote", "downvote"], required: true }
+    voteType: { type: String, enum: ["upvotes", "downvotes"], required: true }
   },
   { timestamps: true }
 );

@@ -12,7 +12,7 @@ export async function POST(request) {
   const { provider, providerAccountId, user } = await request.json();
   const session = await mongoose.startSession();
   session.startTransaction();
-
+  logger.info(`Provider: ${provider} , ProviderAccountId: ${providerAccountId}, User: ${JSON.stringify(user, null, 2)}`)
   try {
     const { name, image, username, email } = user;
 
@@ -24,10 +24,8 @@ export async function POST(request) {
       typeof username !== "string" ||
       typeof email !== "string"
     ) {
-      logger.error("Invalid input!");
       throw new Error("Invalid input!");
     }
-
     let existingUser = await User.findOne({ email }).session(session);
     if (!existingUser) {
       [existingUser] = await User.create(
@@ -44,21 +42,19 @@ export async function POST(request) {
           session,
         });
       }
-    }
-
+    }    
     const existingAccount = await Account.findOne({
       userId: existingUser._id,
       provider,
       providerAccountId,
     }).session(session);
-
     if (!existingAccount) {
       await Account.create(
         [
           {
             userId: existingUser._id, 
             name,
-            image,
+            //image,
             email,
             provider,
             providerAccountId,

@@ -1,0 +1,73 @@
+.tag-card-container {
+    background-color: #48494B;
+    margin-top: 25px;
+    width: 200px;
+    height: 270px;
+    border-radius: 10px;
+    text-align: center; 
+    box-shadow: 5px 10px #888888;
+}
+.tag-card-container:hover {
+    box-shadow: 10px 4px 12px rgba(0, 0, 0, 0.7); /* Darker shadow on hover */
+    transform: translateY(-10px); /* Slight upward movement on hover */
+    transition: all 0.3s ease; /* Smooth transition for the hover effect */
+    border: 2px solid #48494B
+}
+.name-container:hover .tag-name {
+    text-decoration: underline;
+ }
+.name-container {
+    display: inline-block; 
+    background-color: #007bff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.tag-name {
+    text-align: center;
+    color: white;
+    margin: 0; 
+}
+
+.tag-desc {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    white-space: normal;
+    color: white;
+}
+
+.question-count-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    
+}
+.question-count-text {
+    color: white;
+}
+.question-count-number {
+    color: #007bff;
+    font-weight: 900;
+    font-size: 18px;
+}
+
+@media (max-width: 500px) {
+    .tag-card-container {
+        width: 180px;
+    }
+}
+
+@media (max-width: 400px) {
+    .tag-card-container {
+        width: 150px;
+    }
+}
+
+@media (max-width: 351px) {
+    .tag-card-container {
+        width: 120px;
+    }
+}

@@ -58,4 +58,10 @@ export const api = {
     delete: (id) =>
       fetchHandler(`${BASE_URL}/accounts/${id}`, { method: "DELETE" }),
   },
+  ai: {
+    answers: (question, description) => fetchHandler(`${BASE_URL}/api/answer`, {
+      method: "POST",
+      body: JSON.stringify({ question, description }),
+    })
+  }
 };

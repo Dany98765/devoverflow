@@ -1,0 +1,67 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0; /* shorthand for top:0, right:0, bottom:0, left:0 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  padding: 20px; /* ensures modal isn't glued to screen edges */
+}
+
+.modal-container {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 600px;
+  width: 100%;
+  border-radius: 20px;
+  padding: 40px 30px 80px; /* balanced spacing inside */
+  text-align: center;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-lock-img {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 25px;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: black;
+  width: 85%;
+  line-height: 1.4;
+}
+
+.modal-desc {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 16px;
+  width: 85%;
+  margin-bottom: 0; /* spacing now handled by button padding */
+}
+
+.modal-signin-button {
+  width: 100%;
+  height: 55px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 0 0 20px 20px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transition: background 0.2s ease;
+}
+
+.modal-signin-button:hover {
+  background-color: #0056b3;
+}

@@ -25,7 +25,7 @@ export default async function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <SessionProvider session={session}>
         <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Navbar>{children}</Navbar>
+        <Navbar session={session}>{children}</Navbar>
         </body>
       </SessionProvider>
     </html>

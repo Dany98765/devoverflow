@@ -1,15 +1,17 @@
-"use client";
+"use client"
 
 import "./styles.css";
 import { useState, useTransition, useEffect } from "react";
 import dynamic from "next/dynamic";
 import QuestionTags from "@/components/question-tags/page";
-import { createQuestion, editQuestion } from "@/utils/actions/questionTag";
+import { createQuestion, editQuestion } from "@/utils/actions/question.action";
 import AlertMessage from "@/components/alert-message/page";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/routes";
 import { title } from "process";
 import logger from "@/utils/logger";
+import { useSession } from "next-auth/react";
+import Modal from "@/components/modal/page";
 
 const QuestionEditor = dynamic(() => import("@/components/question-editor/page"), {
   ssr: false,
@@ -20,6 +22,7 @@ const QuestionEditor = dynamic(() => import("@/components/question-editor/page")
 export default function AskAQuestionPage({ question, isEdit }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const { data: session } = useSession()
   const [tags, setTags] = useState([]);
   const [questionTitle, setQuestionTitle] = useState("");
   const [markdown, setMarkdown] = useState(
@@ -62,6 +65,7 @@ export default function AskAQuestionPage({ question, isEdit }) {
   } else{
     logger.info("")
   }
+  console.log(isEdit)
   return (
     <div>
       {question?.title === title && question?.description === markdown && question?.tags === tags ? 
@@ -103,8 +107,9 @@ export default function AskAQuestionPage({ question, isEdit }) {
             required
           />
           <h5>Be specific and imagine you are asking this question to another person.</h5>
-          {(questionTitle.length <= 15 || questionTitle.length >= 80) ? (
-            <AlertMessage status="error" message="Title must be between 15-80 chracters long!" />
+          <p style={{ color: "	rgb(211,211,211)" }}>Characters count: {questionTitle.length}/100</p>
+          {(questionTitle.length <= 20 || questionTitle.length >= 100) ? (
+            <AlertMessage status="error" message="Title must be between 20-100 chracters long!" />
           ) : null}
         </div>
         <br />
@@ -113,6 +118,7 @@ export default function AskAQuestionPage({ question, isEdit }) {
           <QuestionEditor fieldName="description" markdownProp={markdown} handleChangeProp={handleChange} />
           <input name="description" type="hidden" value={markdown} onChange={handleChange} />
           <h5>Explain your problem clearly and thoroughly.</h5>
+          <p style={{ color: "	rgb(211,211,211)" }}>Characters count: {markdown.length}/1000</p>
           {(markdown.length < 50 || markdown.length > 1000) ? 
           <AlertMessage status="error" message="Description must be between 50-1000 chracters long!" /> : null}
         </div>
@@ -124,9 +130,10 @@ export default function AskAQuestionPage({ question, isEdit }) {
           <h5>Enter tags to help categorize your question.</h5>
         </div>
         <br />
-        <input type="hidden" name="questionId" value={question._id} />
+        {isEdit ? <input type="hidden" name="questionId" value={question._id} /> : null}
         <button type="submit" disabled={isPending ? true : false} className="post-question-button" style={{backgroundColor: isPendingBGColor}}>{submitLabel}</button>
       </form>
+      {!session && <Modal />}
     </div>
   );
 } 
